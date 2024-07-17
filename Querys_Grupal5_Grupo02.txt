@@ -1,0 +1,73 @@
+CREATE DATABASE Grupal5;
+CREATE USER 'administrador'@'localhost' IDENTIFIED BY 'admin';
+GRANT ALL PRIVILEGES ON Grupal5.* TO 'administrador'@'localhost';
+FLUSH PRIVILEGES;
+USE Grupal5; 
+
+-- Se modificó el UTC de la sesión a -3:00
+SET time_zone = '-3:00';
+
+-- Se creó la tabla usuarios
+CREATE TABLE usuarios (
+    id_usuario INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    nombre_usuario VARCHAR(64),
+    apellidos_usuario VARCHAR(128),
+    contrasena_usuario VARCHAR(64),
+    fecha_hora_utc TIMESTAMP DEFAULT NOW(),
+    genero_usuario VARCHAR(32),
+    tel_usuario BIGINT
+);
+
+-- Se creó la tabla registro usuarios
+CREATE TABLE registro_usuarios (
+    id_ingreso INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT,
+    fecha_hora TIMESTAMP DEFAULT NOW(),
+	FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_usuario) ON DELETE CASCADE
+);
+
+-- Insertando registros
+INSERT INTO usuarios (nombre_usuario, apellidos_usuario, contrasena_usuario, genero_usuario, tel_usuario) VALUES 
+('Carlos', 'García Pérez', 'password123', 'Masculino', 5512345678),
+('María', 'López Hernández', 'seCurePass456', 'FeMenino', 34912345678),
+('ANa', 'MaRtínez Gómez', 'myPaSsword789', 'FemeNino', 571234567890),
+('LUIS', 'GonzÁlez Rodríguez', 'anotheRPass321', 'MasculIno', 541123456789),
+('ELENA', 'FernánDez Ruiz', 'safePasS654', 'FemeninO', 562123456789),
+('JORGE', 'Sánchez Torres', 'passWord987', 'MasculinO', 511234567890),
+('LAURA', 'Díaz RamÍrez', 'password2021', 'Femenino', 351912345678),
+('MIGUEL', 'JIménez OrTiz', 'superSecure001', 'Masculino', 13471234567);
+
+
+-- Insertando registros
+INSERT INTO registro_usuarios (id_usuario) VALUES
+(1),
+(2),
+(3),
+(4),
+(5),
+(6),
+(7),
+(8);
+
+-- para modificar de UTC -3:00 a -2:00
+UPDATE usuarios
+SET fecha_hora_utc = fecha_hora_utc + INTERVAL 1 HOUR
+WHERE fecha_hora_utc IS NOT NULL;
+
+UPDATE registro_usuarios
+SET fecha_hora = fecha_hora + INTERVAL 1 HOUR
+WHERE fecha_hora IS NOT NULL;
+
+-- creando nueva tabla contactos
+CREATE TABLE contactos (
+    id_contacto INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT,
+    tel_usuario BIGINT,
+    email varchar(64),
+	FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario) ON DELETE CASCADE,
+    FOREIGN KEY (tel_usuario) REFERENCES usuarios(tel_usuario) ON DELETE CASCADE
+);
+
+-- se modificó la tabla usuarios agregandole el UNIQUE para poder referenciar una FK en la tabla contactos
+-- El telefono del usuario será un valor unico e irrepetible.
+ALTER TABLE usuarios MODIFY tel_usuario BIGINT UNIQUE;
